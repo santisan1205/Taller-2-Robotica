@@ -1,100 +1,75 @@
-#1/usr/bin/env python3
-
 import rclpy
 from rclpy.node import Node
-from std_srvs.srv import Trigger
 from geometry_msgs.msg import Twist
-import os
+from std_srvs.srv import Trigger
 import time
+import os
 
-class TurtleBotPlayer(Node):
+class PlayerAckermann(Node):
     def __init__(self):
-        super().__init__('turtle_bot_player')
-        # Definir el servicio Trigger
-        self.srv = self.create_service(Trigger, 'play_recording', self.play_callback)
+        super().__init__('player_ackermann')
+        
+        # Publicador de comandos hacia el robot/odometría
         self.publisher = self.create_publisher(Twist, 'turtlebot_cmdVel', 10)
-        self.get_logger().info('Nodo Player listo y esperando servicio Trigger...')
+        
+        # Servidor de servicio para iniciar la reproducción (Criterio 13)
+        self.srv = self.create_service(Trigger, 'play_recording', self.play_callback)
+        
+        self.get_logger().info('Nodo Player Ackermann listo y esperando servicio...')
 
     def play_callback(self, request, response):
+        # 1. Leer el nombre del archivo desde el puntero generado por la interfaz
         try:
-            # Detectar la carpeta actual
-            
-            current_dir = os.getcwd()
-            ptr_path = os.path.join(current_dir, "last_file.ptr")
-            
-            # Verificar si el archivo de control existe
-            if not os.path.exists(ptr_path):
-                self.get_logger().error(f"No se encontro el archivo: {ptr_path}")
-                response.success = False
-                response.message = "Error: No se ha seleccionado archivo en la interfaz."
-                return response
-
-            # Leer el nombre del archivo guardado por la interfaz
+            ptr_path = os.path.join(os.getcwd(), "last_file.ptr")
             with open(ptr_path, "r") as f:
-                target_name = f.read().strip()
-        
-            # Construir la ruta al archivo .txt
-            filename = os.path.join(current_dir, f"{target_name}.txt")
-        
-            if not os.path.exists(filename):
-                self.get_logger().error(f"No existe el archivo de datos: {filename}")
+                filename = f.read().strip()
+            
+            file_path = os.path.join(os.getcwd(), f"{filename}.txt")
+            
+            if not os.path.exists(file_path):
                 response.success = False
-                response.message = f"Archivo '{target_name}.txt' no encontrado."
+                response.message = f"Error: El archivo {filename}.txt no existe."
                 return response
 
-            # Leer las lineas del archivo
-            with open(filename, 'r') as file:
-                lines = file.readlines()
+            self.get_logger().info(f'Reproduciendo trayectoria de: {filename}.txt')
             
-            self.get_logger().info(f"Iniciando reproduccion de {len(lines)} lineas...")
-            
-            # Lógica de reproducción con tiempo sincronizado
-            start_replay = time.time()
-            
+            # 2. Leer y ejecutar la secuencia de comandos
+            with open(file_path, "r") as f:
+                lines = f.readlines()
+                
+            start_play_time = time.time()
             for line in lines:
-                partes = line.strip().split(',')
-                # Validar que la linea tenga los 3 datos: Tiempo, Lineal, Angular
-                if len(partes) < 3:
-                    continue
-                    
-                tiempo_grabado = float(partes[0])
-                v_lineal = float(partes[1])
-                v_angular = float(partes[2])
-                    
-                # Esperar hasta que llegue el momento de ejecutar este comando
-                while (time.time() - start_replay) < tiempo_grabado:
-                    time.sleep(0.001) 
-            
-                # Publicar el comando de velocidad al robot
+                # El formato es: tiempo,velocidad,angulo
+                t_rec, v, delta = map(float, line.split(','))
+                
+                # Esperar hasta el momento exacto del comando (reproducción fiel)
+                while (time.time() - start_play_time) < t_rec:
+                    time.sleep(0.001)
+                
+                # Publicar el comando
                 msg = Twist()
-                msg.linear.x = v_lineal
-                msg.angular.z = v_angular
-                self.publisher.publish(msg) 
-            
-            # Detener el robot al terminar
-            self.publisher.publish(Twist())
+                msg.linear.x = v
+                msg.angular.z = delta
+                self.publisher.publish(msg)
+
+            # 3. Frenar el robot al terminar
+            stop_msg = Twist()
+            self.publisher.publish(stop_msg)
             
             response.success = True
-            response.message = "Reproduccion finalizada con exito"
-            self.get_logger().info("Reproduccion finalizada")
-                
+            response.message = "Reproducción completada con éxito."
+            
         except Exception as e:
             response.success = False
-            response.message = f"Error interno: {str(e)}"
-            self.get_logger().error(f"Error en play_callback: {e}")
+            response.message = f"Error durante la reproducción: {str(e)}"
             
         return response
 
 def main(args=None):
     rclpy.init(args=args)
-    node = TurtleBotPlayer()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
+    node = PlayerAckermann()
+    rclpy.spin(node)
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
