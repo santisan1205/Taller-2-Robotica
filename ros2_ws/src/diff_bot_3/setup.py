@@ -24,9 +24,10 @@ setup(
     },
     entry_points={
     	'console_scripts': [
-        	'turtle_bot_teleop = turtle_bot_3.turtle_bot_teleop:main',
-        	'turtle_bot_interface = turtle_bot_3.turtle_bot_interface:main',
-        	'turtle_bot_player = turtle_bot_3.turtle_bot_player:main',
+            'robot_core = diff_bot_3.robot_core:main'
+        	'robot_teleop = diff_bot_3.robot_teleop:main',
+        	'robot_interface = diff_bot_3.robot_interface:main',
+        	'robot_player = diff_bot_3.robot_player:main',
     	],
     },
 )
