@@ -26,11 +26,12 @@ def generate_launch_description():
             emulate_tty=True # Crucial para que funcionen los print() y los input()
         ),
         # 4. El Control por Teclado
-        Node(
-            package='diff_bot_3',
-            executable='robot_teleop',
-            name='teleop_node',
-            output='screen',
-            emulate_tty=True # Crucial para leer el teclado con pynput
-        )
+        #Node(
+        #    package='diff_bot_3',
+        #    executable='robot_teleop',
+        #    name='teleop_node',
+        #    output='screen',
+        #    emulate_tty=True # Crucial para leer el teclado con pynput
+        #)
     ])
+
