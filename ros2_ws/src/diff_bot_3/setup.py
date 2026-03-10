@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 import os
 from glob import glob
 
-package_name = 'turtle_bot_3'
+package_name = 'diff_bot_3'
 
 setup(
     name=package_name,
