@@ -1,6 +1,6 @@
-from setuptools import find_packages, setup
 import os
 from glob import glob
+from setuptools import find_packages, setup
 
 package_name = 'diff_bot_3'
 
@@ -12,25 +12,22 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # Aquí está la línea que carga la carpeta launch
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='robotica',
-    maintainer_email='robotica@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
-    extras_require={
-        'test': [
-            'pytest',
-        ],
-    },
+    maintainer='johan',
+    maintainer_email='johan@todo.com',
+    description='Paquete para robot diferencial de la U Andes',
+    license='Apache-2.0',
+    tests_require=['pytest'],
     entry_points={
-    	'console_scripts': [
-            'robot_core = diff_bot_3.robot_core:main'
-        	'robot_teleop = diff_bot_3.robot_teleop:main',
-        	'robot_interface = diff_bot_3.robot_interface:main',
-        	'robot_player = diff_bot_3.robot_player:main',
-    	],
+        'console_scripts': [
+            'robot_core = diff_bot_3.robot_core:main',
+            'robot_teleop = diff_bot_3.robot_teleop:main',
+            'robot_interface = diff_bot_3.robot_interface:main',
+            'robot_player = diff_bot_3.robot_player:main',
+        ],
     },
 )
