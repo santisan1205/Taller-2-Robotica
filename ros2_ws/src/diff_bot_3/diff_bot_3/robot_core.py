@@ -66,11 +66,11 @@ class RobotCore(Node):
         v = msg.linear.x
         w = msg.angular.z
         
-        v_izq = v - (w * self.L / 2.0)
-        v_der = v + (w * self.L / 2.0)
+        v_izq = v + (w * self.L / 2.0)
+        v_der = v - (w * self.L / 2.0)
         
         # Mapear de m/s a PWM (-1.0 a 1.0 para gpiozero)
-        # Nota: Ajusta el divisor '0.5' según la velocidad máxima real de tu robot
+        
         pwm_izq = max(-1.0, min(1.0, v_izq / 0.5))
         pwm_der = max(-1.0, min(1.0, v_der / 0.5))
         
