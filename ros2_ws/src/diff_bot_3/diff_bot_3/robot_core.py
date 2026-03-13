@@ -28,9 +28,9 @@ class RobotCore(Node):
         self.enc_izq_a.when_activated = self.contar_tick_izq
         self.enc_der_a.when_activated = self.contar_tick_der
 
-        # --- PARÁMETROS FÍSICOS DEL ROBOT (Ajusta estos valores) ---
-        self.R = 0.033 # Radio de la rueda en metros
-        self.L = 0.16  # Distancia entre las dos ruedas en metros
+        # --- PARÁMETROS FÍSICOS DEL ROBOT ---
+        self.R = 0.06 # Radio de la rueda en metros
+        self.L = 0.209  # Distancia entre las dos ruedas en metros
         self.TICKS_POR_VUELTA = 374.0 # Ajusta según la reducción de tus motores
         
         # Variables de Odometría
