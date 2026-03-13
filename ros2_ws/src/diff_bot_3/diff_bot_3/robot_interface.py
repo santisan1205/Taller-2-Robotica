@@ -63,7 +63,7 @@ class InterfaceDiferencial(Node):
             self.log_file.write(f"{dt:.4f},{msg.linear.x:.4f},{msg.angular.z:.4f}\n")
 
     def call_player_service(self, event):
-        # OJO: Se debe ingresar el texto en la terminal donde lanzaste el nodo
+        # Se llama al archivo para la reproducción
         fname = input("\nNombre del archivo a reproducir: ")
         with open(os.path.join(os.getcwd(), "last_file.ptr"), "w") as f:
             f.write(fname)

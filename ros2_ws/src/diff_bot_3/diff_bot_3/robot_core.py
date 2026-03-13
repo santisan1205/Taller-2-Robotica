@@ -10,12 +10,12 @@ class RobotCore(Node):
     def __init__(self):
         super().__init__('robot_core_node')
         
-        # --- CONFIGURACIÓN DE MOTORES (gpiozero hace el PWM automático) ---
+        #CONFIGURACIÓN DE MOTORES (gpiozero hace el PWM automático)
         # Motor(forward, backward, enable)
         self.motor_izq = Motor(forward=5, backward=6, enable=12)
         self.motor_der = Motor(forward=23, backward=24, enable=13)
         
-        # --- CONFIGURACIÓN DE ENCODERS ---
+        #CONFIGURACIÓN DE ENCODERS (PINOUT)
         self.enc_izq_a = DigitalInputDevice(17)
         self.enc_izq_b = DigitalInputDevice(27)
         self.enc_der_a = DigitalInputDevice(22)
@@ -28,10 +28,10 @@ class RobotCore(Node):
         self.enc_izq_a.when_activated = self.contar_tick_izq
         self.enc_der_a.when_activated = self.contar_tick_der
 
-        # --- PARÁMETROS FÍSICOS DEL ROBOT ---
+        #PARÁMETROS FÍSICOS DEL ROBOT
         self.R = 0.06 # Radio de la rueda en metros
         self.L = 0.209  # Distancia entre las dos ruedas en metros
-        self.TICKS_POR_VUELTA = 374.0 # Ajusta según la reducción de tus motores
+        self.TICKS_POR_VUELTA = 374.0 # Reducción motores
         
         # Variables de Odometría
         self.x = 0.0
@@ -39,7 +39,7 @@ class RobotCore(Node):
         self.theta = 0.0
         self.last_time = self.get_clock().now()
         
-        # --- ROS 2 SUBSCRIBERS Y PUBLISHERS ---
+        # ROS 2 SUBSCRIBERS Y PUBLISHERS
         self.subscription = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
         self.odom_pub = self.create_publisher(Odometry, '/odom', 10)
         
@@ -85,7 +85,7 @@ class RobotCore(Node):
         dist_izq = 2.0 * math.pi * self.R * (self.ticks_izq / self.TICKS_POR_VUELTA)
         dist_der = 2.0 * math.pi * self.R * (self.ticks_der / self.TICKS_POR_VUELTA)
         
-        # Reseteamos los ticks para el siguiente ciclo
+        # Resetear los ticks para el siguiente ciclo
         self.ticks_izq = 0
         self.ticks_der = 0
         
