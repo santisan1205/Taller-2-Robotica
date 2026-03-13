@@ -28,9 +28,9 @@ class RobotCore(Node):
         self.enc_izq_a.when_activated = self.contar_tick_izq
         self.enc_der_a.when_activated = self.contar_tick_der
 
-        # --- PARÁMETROS FÍSICOS DEL ROBOT (Ajusta estos valores) ---
-        self.R = 0.033 # Radio de la rueda en metros
-        self.L = 0.16  # Distancia entre las dos ruedas en metros
+        # --- PARÁMETROS FÍSICOS DEL ROBOT ---
+        self.R = 0.06 # Radio de la rueda en metros
+        self.L = 0.209  # Distancia entre las dos ruedas en metros
         self.TICKS_POR_VUELTA = 374.0 # Ajusta según la reducción de tus motores
         
         # Variables de Odometría
@@ -66,11 +66,11 @@ class RobotCore(Node):
         v = msg.linear.x
         w = msg.angular.z
         
-        v_izq = v - (w * self.L / 2.0)
-        v_der = v + (w * self.L / 2.0)
+        v_izq = v + (w * self.L / 2.0)
+        v_der = v - (w * self.L / 2.0)
         
         # Mapear de m/s a PWM (-1.0 a 1.0 para gpiozero)
-        # Nota: Ajusta el divisor '0.5' según la velocidad máxima real de tu robot
+        
         pwm_izq = max(-1.0, min(1.0, v_izq / 0.5))
         pwm_der = max(-1.0, min(1.0, v_der / 0.5))
         

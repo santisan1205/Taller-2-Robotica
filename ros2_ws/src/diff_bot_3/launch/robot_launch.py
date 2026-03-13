@@ -3,38 +3,42 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
-        # 1. El Cerebro (Hardware real)
+        # 1. El Cerebro (Intacto)
         Node(
             package='diff_bot_3',
             executable='robot_core',
-            name='robot_core_node',
-            output='screen'
+            name='robot_core_node'
         ),
-        # 2. El Reproductor (Servicio)
+        
+        # 2. El Piloto Automático (Intacto, como pediste)
         Node(
             package='diff_bot_3',
             executable='robot_player',
-            name='player_diferencial',
-            output='screen'
+            name='robot_player_node'
         ),
-        # 3. La Interfaz Gráfica
-        #Node(
-        #    package='diff_bot_3',
-        #    executable='robot_interface',
-        #    name='robot_interface_node',
-        #    output='screen',
-        #    emulate_tty=True,
-        #    arguments=['--ros-args', '--log-level', 'info'],
-        #    on_exit=None,
-            # -------------------
-        #),
-        # 4. El Control por Teclado
-        #Node(
-        #    package='diff_bot_3',
-        #    executable='robot_teleop',
-        #    name='teleop_node',
-        #    output='screen',
-        #    emulate_tty=True # Crucial para leer el teclado con pynput
-        #)
+
+        # --- LA MEJORA DEL CONTROL BLUETOOTH ---
+        # 3. Lector del control físico
+        Node(
+            package='joy',
+            executable='joy_node',
+            name='joy_node'
+        ),
+        
+        # 4. Traductor de botones a velocidades
+        # 4. Traductor de botones a velocidades (MODO DIOS: Sin embrague)
+        Node(
+            package='teleop_twist_joy',
+            executable='teleop_node',
+            name='teleop_twist_joy_node',
+            parameters=[{
+                'require_enable_button': False, # ¡MAGIA! Apaga el botón de seguridad
+                'axis_linear.x': 1,             # Eje 1: Palanca Izquierda (Adelante/Atrás)
+                'axis_angular.yaw': 0,          # Eje 0: Palanca Izquierda (Giro)
+                'scale_linear.x': 0.5,          # Velocidad máxima lineal (m/s)
+                'scale_angular.yaw': 1.0        # Velocidad máxima angular (rad/s)
+            }]
+        )
     ])
 
+        
